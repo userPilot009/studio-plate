@@ -22,7 +22,7 @@ export async function generateLandingHtml(userPrompt: string): Promise<string> {
   const client = createAnthropic();
   const message = await client.messages.create({
     model: getModel(),
-    max_tokens: 16384,
+    max_tokens: 6000,
     system: [
       {
         type: "text",
