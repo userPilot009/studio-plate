@@ -54,9 +54,22 @@ export default function BuildForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, tier: previewTier }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Generation failed");
-      router.push(`/preview/${data.id}`);
+      const raw = await res.text();
+      let data: Record<string, unknown> = {};
+      try {
+        data = raw ? JSON.parse(raw) as Record<string, unknown> : {};
+      } catch {
+        data = { error: raw || "Generation failed — invalid server response." };
+      }
+
+      if (!res.ok) {
+        const message = typeof data.error === "string" ? data.error : "Generation failed";
+        throw new Error(message);
+      }
+
+      const id = typeof data.id === "string" ? data.id : "";
+      if (!id) throw new Error("Generation succeeded but no preview id was returned.");
+      router.push(`/preview/${id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Generation failed — please try again.");
       setBusy(false);

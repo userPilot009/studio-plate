@@ -18,26 +18,11 @@ interface PreviewFrameProps {
 
 export default function PreviewFrame({ htmlPages, restaurantName, generationId, tier }: PreviewFrameProps) {
   const [variant, setVariant] = useState(0);
-  const [copied, setCopied] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
 
   const safeIndex = Math.min(variant, Math.max(0, htmlPages.length - 1));
   const html = htmlPages[safeIndex] ?? "";
   const showVariantTabs = tier === "triple" && htmlPages.length > 1;
-
-  const copyHTML = async () => {
-    await navigator.clipboard.writeText(html);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const downloadPreview = () => {
-    const a = document.createElement("a");
-    a.href = "data:text/html;charset=utf-8," + encodeURIComponent(html);
-    const suffix = showVariantTabs ? `-direction-${safeIndex + 1}` : "";
-    a.download = (restaurantName || "restaurant").toLowerCase().replace(/\s+/g, "-") + suffix + "-preview.html";
-    a.click();
-  };
 
   const tripleAvailable = tier === "triple" && htmlPages.length >= 3;
 
@@ -78,8 +63,9 @@ export default function PreviewFrame({ htmlPages, restaurantName, generationId, 
           PLATE STUDIO
         </Link>
         <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          <Btn onClick={copyHTML}>{copied ? "Copied!" : "Copy HTML"}</Btn>
-          <Btn onClick={downloadPreview}>Download preview</Btn>
+          <p className="cp" style={{ color: C.muted, fontSize: "13px" }}>
+            Source files unlock after purchase
+          </p>
         </div>
       </div>
 
