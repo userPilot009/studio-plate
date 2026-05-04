@@ -113,6 +113,9 @@ export function buildPrompt(f: FormData, variantOverride?: typeof TRIPLE_VARIANT
 
 export function extractHTML(raw: string): string {
   const start = raw.indexOf("<!DOCTYPE html>");
-  const end   = raw.lastIndexOf("</html>") + 7;
-  return start !== -1 ? raw.slice(start, end) : raw;
+  if (start === -1) return raw;
+
+  const closeIdx = raw.lastIndexOf("</html>");
+  const end = closeIdx === -1 ? raw.length : closeIdx + "</html>".length;
+  return raw.slice(start, end);
 }
